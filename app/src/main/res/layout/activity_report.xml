@@ -21,7 +21,7 @@
         android:layout_marginBottom="681dp"
         android:fontFamily="sans-serif"
         android:gravity="center"
-        android:text="@string/title"
+        android:text="@string/report"
         android:textSize="15dp"
         android:textStyle="bold" />
 
