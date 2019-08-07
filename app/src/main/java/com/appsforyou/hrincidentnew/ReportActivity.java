@@ -2,6 +2,8 @@ package com.appsforyou.hrincidentnew;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,9 +13,13 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -21,28 +27,54 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import static java.lang.System.out;
+
 public class ReportActivity extends AppCompatActivity {
     Button report;
     /*Declaring the instance of SQLite database */
+    static final int CAM_REQUEST=1;
     SQLiteDatabase db;
+    Intent intent1;
+    FileOutputStream fstream;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
-
+        final EditText incidentId=(EditText) findViewById(R.id.idEdit);
+        EditText date=(EditText) findViewById(R.id.editText2);
+        RadioGroup rb=(RadioGroup) findViewById(R.id.genderGroup);
+        RadioButton rbmale=(RadioButton) findViewById(R.id.maleradio);
+        RadioButton rbfemale=(RadioButton) findViewById(R.id.femaleradio);
         final EditText empId = (EditText) findViewById(R.id.empnumEdit);
         final EditText empName = (EditText) findViewById(R.id.nameEdit);
         final EditText dept = (EditText) findViewById(R.id.departEdit);
         final EditText position = (EditText) findViewById(R.id.positionEdit);
+        final ImageView img=(ImageView) findViewById(R.id.image);
+        Spinner shift=(Spinner) findViewById(R.id.shiftSpinner);
+        Spinner injurytype=(Spinner) findViewById(R.id.injuryType);
         Spinner injury=(Spinner) findViewById(R.id.injuryPart);
+
+        rbmale.setChecked(true);
+        incidentId.setEnabled(false);
         empName.setEnabled(false);
         dept.setEnabled(false);
         position.setEnabled(false);
+        String gender;
+        if(rbmale.isChecked()){
 
+            gender=rbmale.getText().toString();
+        }
+        //checking if user opted for chocolate flavour
+        else if(rbfemale.isChecked()){
+            gender=rbfemale.getText().toString();
+        }
         // this listener will autofill employee details from database based on user input of employee ID
         empId.addTextChangedListener(new TextWatcher() {
             @Override
@@ -133,12 +165,34 @@ public class ReportActivity extends AppCompatActivity {
         report.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
-
+                Intent camera_intent =new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(camera_intent,CAM_REQUEST);
                 db.close();
+
+                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                emailIntent.setType("application/image");
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"usdadiyajay123@gmail.com"});
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT,"HR incident reporting");
+                emailIntent.putExtra(Intent.EXTRA_TEXT,"Employee Name:"+empName.getText().toString()+"" +
+                        " ");
+               // emailIntent.putExtra(Intent.EXTRA_STREAM,);
+                startActivity(Intent.createChooser(emailIntent, "Send mail."));
             }
         });
+    }
+    Intent i=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+    public void onActivity(int requestCode,int resultCode, Intent data){
+        super.onActivityResult(requestCode,resultCode,data);
+        Bitmap tempImage;
+        ImageView img=(ImageView) findViewById(R.id.image);
+        //captures photo using the camera
+        if (requestCode==CAM_REQUEST && resultCode==RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap photo = (Bitmap) extras.get("data");
+            img.setImageBitmap(photo);
+        }
+
     }
     //use this method to create db and store data in it
     public void createDb() {
