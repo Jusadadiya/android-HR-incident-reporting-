@@ -115,8 +115,7 @@
         android:layout_marginTop="199dp"
         android:layout_marginEnd="25dp"
         android:layout_marginBottom="471dp"
-        android:ems="10"
-        android:inputType="textPersonName" />
+        android:ems="10" />
 
     <TextView
         android:id="@+id/nameText"
@@ -144,8 +143,7 @@
         android:layout_marginTop="269dp"
         android:layout_marginEnd="22dp"
         android:layout_marginBottom="406dp"
-        android:ems="10"
-        android:inputType="textPersonName" />
+        android:ems="10" />
 
     <RadioGroup
         android:id="@+id/genderGroup"
@@ -193,7 +191,7 @@
         android:text="@string/gender" />
 
     <TextView
-        android:id="@+id/shiftText"
+        android:id="@+id/shiftLabel"
         android:layout_width="107dp"
         android:layout_height="37dp"
         android:layout_alignParentStart="true"
@@ -217,7 +215,9 @@
         android:layout_marginStart="179dp"
         android:layout_marginTop="387dp"
         android:layout_marginEnd="66dp"
-        android:layout_marginBottom="298dp" />
+        android:layout_marginBottom="298dp"
+        android:entries="@array/shift_type"
+        android:spinnerMode="dropdown"/>
 
     <TextView
         android:id="@+id/departText"
@@ -278,7 +278,7 @@
         android:inputType="textPersonName" />
 
     <TextView
-        android:id="@+id/typeText"
+        android:id="@+id/injuryTypelabel"
         android:layout_width="138dp"
         android:layout_height="34dp"
         android:layout_alignParentStart="true"
@@ -292,7 +292,7 @@
         android:text="@string/incident" />
 
     <Spinner
-        android:id="@+id/typeSpinner"
+        android:id="@+id/injuryType"
         android:layout_width="wrap_content"
         android:layout_height="39dp"
         android:layout_alignParentStart="true"
@@ -302,14 +302,16 @@
         android:layout_marginStart="15dp"
         android:layout_marginTop="620dp"
         android:layout_marginEnd="249dp"
-        android:layout_marginBottom="72dp" />
+        android:layout_marginBottom="72dp"
+        android:entries="@array/incident_type"
+        />
 
     <Spinner
-        android:id="@+id/injury"
+        android:id="@+id/injuryPart"
         android:layout_width="wrap_content"
         android:layout_height="39dp"
-        android:layout_alignStart="@+id/typeSpinner"
-        android:layout_alignBottom="@id/typeSpinner"
+        android:layout_alignStart="@+id/injuryType"
+        android:layout_alignBottom="@id/injuryType"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
@@ -319,11 +321,11 @@
         android:layout_marginBottom="70dp" />
 
     <TextView
-        android:id="@+id/injuryText"
+        android:id="@+id/injuryLabel"
         android:layout_width="138dp"
         android:layout_height="34dp"
-        android:layout_alignLeft="@id/injury"
-        android:layout_alignBottom="@id/typeText"
+        android:layout_alignLeft="@id/injuryPart"
+        android:layout_alignBottom="@id/injuryTypelabel"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
