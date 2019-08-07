@@ -4,7 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -15,8 +18,10 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +38,7 @@ public class ReportActivity extends AppCompatActivity {
         final EditText empName = (EditText) findViewById(R.id.nameEdit);
         final EditText dept = (EditText) findViewById(R.id.departEdit);
         final EditText position = (EditText) findViewById(R.id.positionEdit);
+        Spinner injury=(Spinner) findViewById(R.id.injuryPart);
         empName.setEnabled(false);
         dept.setEnabled(false);
         position.setEnabled(false);
@@ -109,8 +115,21 @@ public class ReportActivity extends AppCompatActivity {
         db.execSQL("CREATE TABLE IF NOT EXISTS tbl_Employee(empID INTEGER PRIMARY KEY AUTOINCREMENT,empName VARCHAR,empDep VARCHAR,empPosition VARCHAR)");
         db.execSQL("INSERT into tbl_Employee(empName,empDep,empPosition) values('Jay','IT','Project Manager'),('William','IT','Tester')," +
                 "('Wen','Management','Manager'),('Himani','Management','Associate'),('Khushi','Customer Service','Head Of Department')");
-
+        db.execSQL("CREATE TABLE IF NOT EXISTS tbl_BodyParts(partID INTEGER PRIMARY KEY AUTOINCREMENT,part VARCHAR)");
+        db.execSQL("INSERT into tbl_BodyParts(part) values('Ankle-left'),('Ankle-right'),('Arm-Both'),('Arm-Left Upper'),('Arm-Right Upper'),('Back-All'),('Back-Lower'),('Back-Middle'),('Back-Upper'),('Chest'),('Ear-Both'),('Ear-Left'),('Ear-Right'),('Elbow-right'),('Elbow-Left'),('Eye-both'),('Eye-Left'),('Eye-Right'),('Face'),('Feet Both')," +
+                "('Foot left'),('Foot right'),('forearm Left'),('forearm right'),('Hand left'),('Hand Palm Right'),('Hand Palm Left'),('Hand-right'),('Hands-both'),('Head rear'),('Head front'),('Head left'),('Head Right'),('Hip left'),('Hip Right'),('Index Finger Left'),('Index finger Right'),('Knee left'),('Knee Right'),('leg left'),('Leg both'),('Leg Right')," +
+                "('Middle finger left'),('Middle finger right'),('Mouth'),('Neck'),('Nose'),('Shoulder right'),('Shoulder left'),('Thumb left'),('Thumb Right'),('Wrist left'),('Wrist right'),('Other'),('Abdomen'),('Multiple'),('N/A'),('Internal')");
         /* View data from database*/
+        //code to populate bodypart drop down list
+        Cursor c = db.rawQuery("SELECT part FROM tbl_BodyParts", null);
+        List<String> categories = new ArrayList<>();
+        while (c.moveToNext()){
+                // Passing values
+            String part = c.getString(0);
+            categories.add(part);
+        }
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
+        injury.setAdapter(dataAdapter);
         report.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
