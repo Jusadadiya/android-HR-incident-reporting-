@@ -1,3 +1,29 @@
 <resources>
     <string name="app_name">HR Incident new</string>
+    <string name="report">Report Incidents</string>
+    <string name="view">View Incidents</string>
+    <string name="title">HR Incident Reporting</string>
+    <string name="id">Incident ID</string>
+    <string name="date">Incident Date</string>
+    <string name="employee_num">Employee Number</string>
+    <string name="employee_name">Employee Name</string>
+    <string name="gender">Gender  </string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="shift">Shift</string>
+    <string-array name="shift_type">
+        <item>Shift A</item>
+        <item>Shift B</item>
+        <item>Shift C</item>
+    </string-array>
+    <string name="department">Department</string>
+    <string name="position">Position</string>
+    <string name="incident">Incident Type</string>
+    <string-array name="incident_type">
+        <item>Near Miss</item>
+        <item>First Aid</item>
+        <item>Medical Aid</item>
+    </string-array>
+    <string name="injury">Injured Body Part</string>
+    <string name="report_btn">Report Incident</string>
 </resources>
