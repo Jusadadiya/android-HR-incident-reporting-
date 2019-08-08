@@ -29,6 +29,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(reportintent);
             return  false;
        }
+        else if (id == R.id.view){
+            viewintent = new Intent(MainActivity.this, ViewActivity.class);
+            startActivity(viewintent);
+            return  false;
+        }
        return super.onOptionsItemSelected(menuItem);
     }
 

@@ -23,6 +23,9 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -37,6 +40,7 @@ import android.widget.Toast;
 import static java.lang.System.out;
 
 public class ReportActivity extends AppCompatActivity {
+    Intent reportintent, viewintent;
     Button report;
     /*Declaring the instance of SQLite database */
     static final int CAM_REQUEST=1;
@@ -44,37 +48,50 @@ public class ReportActivity extends AppCompatActivity {
     Intent intent1;
     FileOutputStream fstream;
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        getMenuInflater().inflate(R.menu.options, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        int id = menuItem.getItemId();
+        if (id == R.id.report){
+            reportintent = new Intent(ReportActivity.this, ReportActivity.class);
+            startActivity(reportintent);
+            return  false;
+        }
+         else if (id == R.id.view){
+            viewintent = new Intent(ReportActivity.this, ViewActivity.class);
+            startActivity(viewintent);
+            return  false;
+        }
+        return super.onOptionsItemSelected(menuItem);
+    }
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
         final EditText incidentId=(EditText) findViewById(R.id.idEdit);
-        EditText date=(EditText) findViewById(R.id.editText2);
-        RadioGroup rb=(RadioGroup) findViewById(R.id.genderGroup);
-        RadioButton rbmale=(RadioButton) findViewById(R.id.maleradio);
-        RadioButton rbfemale=(RadioButton) findViewById(R.id.femaleradio);
+        final EditText date=(EditText) findViewById(R.id.editText2);
+        final RadioGroup rb=(RadioGroup) findViewById(R.id.genderGroup);
+        final RadioButton rbmale=(RadioButton) findViewById(R.id.maleradio);
+        final RadioButton rbfemale=(RadioButton) findViewById(R.id.femaleradio);
         final EditText empId = (EditText) findViewById(R.id.empnumEdit);
         final EditText empName = (EditText) findViewById(R.id.nameEdit);
         final EditText dept = (EditText) findViewById(R.id.departEdit);
         final EditText position = (EditText) findViewById(R.id.positionEdit);
         final ImageView img=(ImageView) findViewById(R.id.image);
-        Spinner shift=(Spinner) findViewById(R.id.shiftSpinner);
-        Spinner injurytype=(Spinner) findViewById(R.id.injuryType);
-        Spinner injury=(Spinner) findViewById(R.id.injuryPart);
+        final Spinner shift=(Spinner) findViewById(R.id.shiftSpinner);
+        final Spinner injurytype=(Spinner) findViewById(R.id.injuryType);
+        final Spinner injury=(Spinner) findViewById(R.id.injuryPart);
 
         rbmale.setChecked(true);
         incidentId.setEnabled(false);
         empName.setEnabled(false);
         dept.setEnabled(false);
         position.setEnabled(false);
-        String gender;
-        if(rbmale.isChecked()){
 
-            gender=rbmale.getText().toString();
-        }
-        //checking if user opted for chocolate flavour
-        else if(rbfemale.isChecked()){
-            gender=rbfemale.getText().toString();
-        }
         // this listener will autofill employee details from database based on user input of employee ID
         empId.addTextChangedListener(new TextWatcher() {
             @Override
@@ -162,19 +179,35 @@ public class ReportActivity extends AppCompatActivity {
         }
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
         injury.setAdapter(dataAdapter);
+
         report.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent camera_intent =new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(camera_intent,CAM_REQUEST);
                 db.close();
+                String gender="male";
+                if(rbmale.isChecked()){
 
+                    gender=rbmale.getText().toString();
+                }
+
+                else if(rbfemale.isChecked()){
+                    gender=rbfemale.getText().toString();
+                }
                 Intent emailIntent = new Intent(Intent.ACTION_SEND);
                 emailIntent.setType("application/image");
                 emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"usdadiyajay123@gmail.com"});
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT,"HR incident reporting");
-                emailIntent.putExtra(Intent.EXTRA_TEXT,"Employee Name:"+empName.getText().toString()+"" +
-                        " ");
+                emailIntent.putExtra(Intent.EXTRA_TEXT,"Incident Date: "+date.getText().toString()+""+"\n"+
+                        "Employee Number: "+empId.getText().toString()+"" +"\n"+
+                        "Employee Name: "+empName.getText().toString()+"" +"\n"+
+                        "Gender: "+ gender +""+"\n"+
+                        "Shift: "+shift.getSelectedItem().toString()+""+"\n"+
+                        "Department: "+dept.getText().toString()+""+"\n"+
+                        "Position: "+position.getText().toString()+""+"\n"+
+                        "Incident Type: "+injurytype.getSelectedItem().toString()+""+"\n"+
+                        "Injured Body Part: "+injury.getSelectedItem().toString()+"" );
                // emailIntent.putExtra(Intent.EXTRA_STREAM,);
                 startActivity(Intent.createChooser(emailIntent, "Send mail."));
             }

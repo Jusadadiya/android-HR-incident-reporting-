@@ -26,4 +26,5 @@
     </string-array>
     <string name="injury">Injured Body Part</string>
     <string name="report_btn">Report Incident</string>
+    <string name="welcome">Select from the menu in corner to perform the action </string>
 </resources>
