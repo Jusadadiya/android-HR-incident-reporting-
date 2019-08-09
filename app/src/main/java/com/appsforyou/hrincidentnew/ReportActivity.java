@@ -39,6 +39,12 @@ public class ReportActivity extends AppCompatActivity {
     SQLiteDatabase db;
     Intent intent1;
     FileOutputStream fstream;
+
+    RadioButton rbmale;
+    RadioButton rbfemale;
+    EditText date, empId, empName, dept, position;
+    Spinner shift, injurytype, injury;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -65,19 +71,18 @@ public class ReportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
         final EditText incidentId=(EditText) findViewById(R.id.idEdit);
-        final EditText date=(EditText) findViewById(R.id.editText2);
+        date=(EditText) findViewById(R.id.editText2);
         final RadioGroup rb=(RadioGroup) findViewById(R.id.genderGroup);
-        final RadioButton rbmale=(RadioButton) findViewById(R.id.maleradio);
-        final RadioButton rbfemale=(RadioButton) findViewById(R.id.femaleradio);
-        final EditText empId = (EditText) findViewById(R.id.empnumEdit);
-        final EditText empName = (EditText) findViewById(R.id.nameEdit);
-        final EditText dept = (EditText) findViewById(R.id.departEdit);
-        final EditText position = (EditText) findViewById(R.id.positionEdit);
+        rbmale=(RadioButton) findViewById(R.id.maleradio);
+        rbfemale=(RadioButton) findViewById(R.id.femaleradio);
+        empId = (EditText) findViewById(R.id.empnumEdit);
+        empName = (EditText) findViewById(R.id.nameEdit);
+        dept = (EditText) findViewById(R.id.departEdit);
+        position = (EditText) findViewById(R.id.positionEdit);
         final ImageView img=(ImageView) findViewById(R.id.image);
-        final Spinner shift=(Spinner) findViewById(R.id.shiftSpinner);
-        final Spinner injurytype=(Spinner) findViewById(R.id.injuryType);
-        final Spinner injury=(Spinner) findViewById(R.id.injuryPart);
-
+        shift=(Spinner) findViewById(R.id.shiftSpinner);
+        injurytype=(Spinner) findViewById(R.id.injuryType);
+        injury=(Spinner) findViewById(R.id.injuryPart);
         rbmale.setChecked(true);
         incidentId.setEnabled(false);
         empName.setEnabled(false);
@@ -257,6 +262,42 @@ public class ReportActivity extends AppCompatActivity {
             Bundle extras = data.getExtras();
             Bitmap photo = (Bitmap) extras.get("data");
             img.setImageBitmap(photo);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        Bitmap tempImage;
+        ImageView img=(ImageView) findViewById(R.id.image);
+        if (requestCode==CAM_REQUEST && resultCode==RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap photo = (Bitmap) extras.get("data");
+            img.setImageBitmap(photo);
+
+            String gender="male";
+            if(rbmale.isChecked()){
+
+                gender=rbmale.getText().toString();
+            }
+            else if(rbfemale.isChecked()){
+                gender=rbfemale.getText().toString();
+            }
+            Intent emailIntent = new Intent(Intent.ACTION_SEND);
+            emailIntent.setType("application/image");
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"willy162@gmail.com"});
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT,"HR incident reporting");
+            emailIntent.putExtra(Intent.EXTRA_TEXT,"Incident Date: "+date.getText().toString()+""+"\n"+
+                    "Employee Number: "+empId.getText().toString()+"" +"\n"+
+                    "Employee Name: "+empName.getText().toString()+"" +"\n"+
+                    "Gender: "+ gender +""+"\n"+
+                    "Shift: "+shift.getSelectedItem().toString()+""+"\n"+
+                    "Department: "+dept.getText().toString()+""+"\n"+
+                    "Position: "+position.getText().toString()+""+"\n"+
+                    "Incident Type: "+injurytype.getSelectedItem().toString()+""+"\n"+
+                    "Injured Body Part: "+injury.getSelectedItem().toString()+"" );
+            //emailIntent.putExtra(Intent.EXTRA_STREAM,);
+            startActivity(Intent.createChooser(emailIntent, "Choose an email client"));
         }
     }
 
