@@ -153,13 +153,31 @@ public class ReportActivity extends AppCompatActivity {
         createDb();
         report = (Button) findViewById(R.id.reportBtn);
 
+        // Create tbl_Employee table and insert five records
         db.execSQL("CREATE TABLE IF NOT EXISTS tbl_Employee(empID INTEGER PRIMARY KEY AUTOINCREMENT,empName VARCHAR,empDep VARCHAR,empPosition VARCHAR)");
         db.execSQL("INSERT into tbl_Employee(empName,empDep,empPosition) values('Jay','IT','Project Manager'),('William','IT','Tester')," +
                 "('Wen','Management','Manager'),('Himani','Management','Associate'),('Khushi','Customer Service','Head Of Department')");
+
+        // Create tbl_BodyParts table and insert body parts data
         db.execSQL("CREATE TABLE IF NOT EXISTS tbl_BodyParts(partID INTEGER PRIMARY KEY AUTOINCREMENT,part VARCHAR)");
         db.execSQL("INSERT into tbl_BodyParts(part) values('Ankle-left'),('Ankle-right'),('Arm-Both'),('Arm-Left Upper'),('Arm-Right Upper'),('Back-All'),('Back-Lower'),('Back-Middle'),('Back-Upper'),('Chest'),('Ear-Both'),('Ear-Left'),('Ear-Right'),('Elbow-right'),('Elbow-Left'),('Eye-both'),('Eye-Left'),('Eye-Right'),('Face'),('Feet Both')," +
                 "('Foot left'),('Foot right'),('forearm Left'),('forearm right'),('Hand left'),('Hand Palm Right'),('Hand Palm Left'),('Hand-right'),('Hands-both'),('Head rear'),('Head front'),('Head left'),('Head Right'),('Hip left'),('Hip Right'),('Index Finger Left'),('Index finger Right'),('Knee left'),('Knee Right'),('leg left'),('Leg both'),('Leg Right')," +
                 "('Middle finger left'),('Middle finger right'),('Mouth'),('Neck'),('Nose'),('Shoulder right'),('Shoulder left'),('Thumb left'),('Thumb Right'),('Wrist left'),('Wrist right'),('Other'),('Abdomen'),('Multiple'),('N/A'),('Internal')");
+
+        // Create tbl_IncidentHistory table
+        // Primary Key: incidentId, which is auto increment
+        db.execSQL("CREATE TABLE IF NOT EXISTS " +
+                "tbl_IncidentHistory(incidentId INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                "incidentDate VARCHAR NOT NULL , " +
+                "empNum INTEGER NOT NULL , " +
+                "empName VARCHAR NOT NULL , " +
+                "gender VARCHAR NOT NULL , " +
+                "shift VARCHAR NOT NULL , " +
+                "department VARCHAR NOT NULL , " +
+                "position VARCHAR NOT NULL , " +
+                "incidentType VARCHAR NOT NULL , " +
+                "injuredPart VARCHAR NOT NULL);");
+
         /* View data from database*/
         //code to populate bodypart drop down list
         Cursor c = db.rawQuery("SELECT part FROM tbl_BodyParts", null);
