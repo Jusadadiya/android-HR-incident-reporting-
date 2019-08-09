@@ -245,6 +245,7 @@ public class ReportActivity extends AppCompatActivity {
             }
         });
     }
+
     Intent i=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
     public void onActivity(int requestCode,int resultCode, Intent data){
@@ -258,11 +259,13 @@ public class ReportActivity extends AppCompatActivity {
             img.setImageBitmap(photo);
         }
     }
+
     //use this method to create db and store data in it
     public void createDb() {
         /*creating the database HRIncident */
         db = openOrCreateDatabase("HRIncidents", Context.MODE_PRIVATE, null);
     }
+
     //this below method is used to get current date of incident from device
     public void getCurrentDate() {
         Calendar calendar = Calendar.getInstance();
@@ -270,6 +273,7 @@ public class ReportActivity extends AppCompatActivity {
         String strDate = mdformat.format(calendar.getTime());
         display(strDate);
     }
+
     //this method is used to display current date in edittext box labeled incident date
     private void display(String num) {
         EditText datetext = (EditText) findViewById(R.id.editText2);
