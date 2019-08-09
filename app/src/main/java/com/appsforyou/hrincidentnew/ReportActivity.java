@@ -169,7 +169,7 @@ public class ReportActivity extends AppCompatActivity {
         db.execSQL("CREATE TABLE IF NOT EXISTS " +
                 "tbl_IncidentHistory(incidentId INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
                 "incidentDate VARCHAR NOT NULL , " +
-                "empNum INTEGER NOT NULL , " +
+                "empNum VARCHAR NOT NULL , " +
                 "empName VARCHAR NOT NULL , " +
                 "gender VARCHAR NOT NULL , " +
                 "shift VARCHAR NOT NULL , " +
@@ -207,7 +207,7 @@ public class ReportActivity extends AppCompatActivity {
                 }
                 String strShift = shift.getSelectedItem().toString();
                 String strDepartment = dept.getText().toString();
-                String strPosition = dept.getText().toString();
+                String strPosition = position.getText().toString();
                 String strIncidentType = injurytype.getSelectedItem().toString();
                 String strInjuryPart = injury.getSelectedItem().toString();
 
@@ -216,6 +216,11 @@ public class ReportActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Please Input All Information", Toast.LENGTH_LONG).show();
                     return;
                 }
+
+                // Insert the record into the table
+                db.execSQL("INSERT INTO tbl_IncidentHistory(incidentDate, empNum, empName, gender, shift, department, position, incidentType, injuredPart) " +
+                        "VALUES('" + strDate + "','" + strEmpNum + "','" + strEmpName + "','" + strGender + "','" + strShift + "','" + strDepartment + "','" + strPosition + "','" + strIncidentType + "', '" + strInjuryPart + "');");
+                Toast.makeText(getApplicationContext(), "Record Successfully Stored", Toast.LENGTH_LONG).show();
 
                 // start camera
                 Intent camera_intent =new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -226,15 +231,15 @@ public class ReportActivity extends AppCompatActivity {
                 emailIntent.setType("application/image");
                 emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"usdadiyajay123@gmail.com"});
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT,"HR incident reporting");
-                emailIntent.putExtra(Intent.EXTRA_TEXT,"Incident Date: "+date.getText().toString()+""+"\n"+
-                        "Employee Number: "+empId.getText().toString()+"" +"\n"+
-                        "Employee Name: "+empName.getText().toString()+"" +"\n"+
+                emailIntent.putExtra(Intent.EXTRA_TEXT,"Incident Date: "+ strDate +""+"\n"+
+                        "Employee Number: "+ strEmpNum +"" +"\n"+
+                        "Employee Name: "+strEmpName+"" +"\n"+
                         "Gender: "+ strGender +""+"\n"+
-                        "Shift: "+shift.getSelectedItem().toString()+""+"\n"+
-                        "Department: "+dept.getText().toString()+""+"\n"+
-                        "Position: "+position.getText().toString()+""+"\n"+
-                        "Incident Type: "+injurytype.getSelectedItem().toString()+""+"\n"+
-                        "Injured Body Part: "+injury.getSelectedItem().toString()+"" );
+                        "Shift: "+ strShift+""+"\n"+
+                        "Department: "+strDepartment+""+"\n"+
+                        "Position: "+strPosition+""+"\n"+
+                        "Incident Type: "+ strIncidentType +""+"\n"+
+                        "Injured Body Part: "+ strInjuryPart+"" );
                // emailIntent.putExtra(Intent.EXTRA_STREAM,);
                 startActivity(Intent.createChooser(emailIntent, "Send mail."));
             }
