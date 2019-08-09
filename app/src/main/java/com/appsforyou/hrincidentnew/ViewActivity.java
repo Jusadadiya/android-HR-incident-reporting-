@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -61,34 +62,16 @@ public class ViewActivity extends AppCompatActivity {
         // clear content in the table
         tableLayout.removeAllViews();
 
-        // create the first row of table
-        TableRow tableRow = new TableRow(ViewActivity.this);
-
-
-
-
-        // Call the procedure to show all records
-        showRecords(csl);
-        csl.close();
-    }
-
-    // procedure to show records
-    public StringBuffer showRecords(Cursor cr){
-        StringBuffer bfr = new StringBuffer();
-        // Retrieve
-        while(cr.moveToNext()){
-            bfr.append("x:" + cr.getString(0) + "\n");
-            bfr.append("x :" + cr.getString(1) + "\n");
-            bfr.append("x :" + cr.getString(2) + "\n");
-            bfr.append("x:" + cr.getString(3) + "\n");
-            bfr.append("x :" + cr.getString(4) + "\n");
-            bfr.append("x :" + cr.getString(5) + "\n");
-            bfr.append("x:" + cr.getString(6) + "\n");
-            bfr.append("x:" + cr.getString(7) + "\n");
-            bfr.append("x :" + cr.getString(8) + "\n");
-            bfr.append("x :" + cr.getString(9) + "\n");
-            bfr.append("x :" + cr.getString(10) + "\n\n");
+        // create the row
+        while(csl.moveToNext()){
+            TableRow tableRow = new TableRow(ViewActivity.this);
+            for(int j=0; j<10; j++){
+                TextView tv = new TextView(ViewActivity.this);
+                tv.setText(csl.getString(j));
+                tableRow.addView(tv);
+            }
+            tableLayout.addView(tableRow);
         }
-        return bfr;
+        csl.close();
     }
 }
