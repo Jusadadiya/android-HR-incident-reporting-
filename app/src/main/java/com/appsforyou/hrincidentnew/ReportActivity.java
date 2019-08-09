@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -25,6 +27,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,6 +48,7 @@ public class ReportActivity extends AppCompatActivity {
     RadioButton rbfemale;
     EditText date, empId, empName, dept, position;
     Spinner shift, injurytype, injury;
+    File newFile;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -276,6 +281,27 @@ public class ReportActivity extends AppCompatActivity {
             Bitmap photo = (Bitmap) extras.get("data");
             img.setImageBitmap(photo);
 
+            try {
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                photo.compress(Bitmap.CompressFormat.PNG, 40,
+                        bytes);
+                // creating a ".jpg" in sdcard folder.
+                String pngUri = Environment
+                        .getExternalStorageDirectory()
+                        + File.separator
+                        + "ReportPhoto"
+                        + "_View.jpg";
+                newFile = new File(pngUri);
+                newFile.createNewFile();
+                // write the bytes in file
+                FileOutputStream fo = new FileOutputStream(newFile);
+                fo.write(bytes.toByteArray());
+                fo.close();
+            } catch (Exception e) {
+                Log.d("error in save image", "-->"
+                        + e.getMessage().toString());
+            }
+
             String gender="male";
             if(rbmale.isChecked()){
 
@@ -297,7 +323,7 @@ public class ReportActivity extends AppCompatActivity {
                     "Position: "+position.getText().toString()+""+"\n"+
                     "Incident Type: "+injurytype.getSelectedItem().toString()+""+"\n"+
                     "Injured Body Part: "+injury.getSelectedItem().toString()+"" );
-            //emailIntent.putExtra(Intent.EXTRA_STREAM,);
+            emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(newFile));
             startActivity(Intent.createChooser(emailIntent, "Choose an email client"));
         }
     }
