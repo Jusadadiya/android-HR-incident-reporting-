@@ -30,7 +30,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,8 +38,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import static android.os.Environment.getExternalStoragePublicDirectory;
 
 public class ReportActivity extends AppCompatActivity {
     Intent reportintent, viewintent;
@@ -87,7 +84,6 @@ public class ReportActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
-        final EditText incidentId=(EditText) findViewById(R.id.idEdit);
         date=(EditText) findViewById(R.id.editText2);
         final RadioGroup rb=(RadioGroup) findViewById(R.id.genderGroup);
         rbmale=(RadioButton) findViewById(R.id.maleradio);
@@ -101,7 +97,6 @@ public class ReportActivity extends AppCompatActivity {
         injurytype=(Spinner) findViewById(R.id.injuryType);
         injury=(Spinner) findViewById(R.id.injuryPart);
         rbmale.setChecked(true);
-        incidentId.setEnabled(false);
         empName.setEnabled(false);
         dept.setEnabled(false);
         position.setEnabled(false);
