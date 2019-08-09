@@ -1,11 +1,13 @@
 package com.appsforyou.hrincidentnew;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -55,6 +57,10 @@ public class ReportActivity extends AppCompatActivity {
     Spinner shift, injurytype, injury;
     File newFile;
     Uri pictureUri;
+    Uri photoUri;
+    Uri mImageCaptureUri;
+    String strEmpNum, strDate, strEmpName, strGender, strShift, strDepartment, strPosition, strIncidentType, strInjuryPart;
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -211,9 +217,9 @@ public class ReportActivity extends AppCompatActivity {
             public void onClick(View view) {
                 // get all input values
                 String strDate = date.getText().toString();
-                String strEmpNum = empId.getText().toString();
-                String strEmpName = empName.getText().toString();
-                String strGender = "";
+                strEmpNum = empId.getText().toString();
+                strEmpName = empName.getText().toString();
+                strGender = "";
                 if(rbmale.isChecked()){
 
                     strGender=rbmale.getText().toString();
@@ -221,11 +227,11 @@ public class ReportActivity extends AppCompatActivity {
                 else if(rbfemale.isChecked()){
                     strGender=rbfemale.getText().toString();
                 }
-                String strShift = shift.getSelectedItem().toString();
-                String strDepartment = dept.getText().toString();
-                String strPosition = position.getText().toString();
-                String strIncidentType = injurytype.getSelectedItem().toString();
-                String strInjuryPart = injury.getSelectedItem().toString();
+                strShift = shift.getSelectedItem().toString();
+                strDepartment = dept.getText().toString();
+                strPosition = position.getText().toString();
+                strIncidentType = injurytype.getSelectedItem().toString();
+                strInjuryPart = injury.getSelectedItem().toString();
 
                 // Validation
                 if(strEmpNum.length()==0 || strGender.length()==0 || strShift.length()==0 || strIncidentType.length()==0 || strInjuryPart.length()==0){
@@ -239,12 +245,61 @@ public class ReportActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Record Successfully Stored", Toast.LENGTH_LONG).show();
 
                 // start camera
-                pictureTaken();
-                //Intent camera_intent =new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                //startActivityForResult(camera_intent,CAM_REQUEST);
+                //pictureTaken();
+                Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                File f = new File(android.os.Environment.getExternalStorageDirectory(), "HRphoto.jpg");
+                mImageCaptureUri = Uri.fromFile(f);
+                //camera_intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+                startActivityForResult(camera_intent,CAM_REQUEST);
 
                 // send email
-                /*
+
+            }
+        });
+    }
+
+    Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+    public void onActivity(int requestCode,int resultCode, Intent data){
+
+        super.onActivityResult(requestCode,resultCode,data);
+        Bitmap tempImage;
+        ImageView img=(ImageView) findViewById(R.id.image);
+        //captures photo using the camera
+        if (requestCode==CAM_REQUEST && resultCode==RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap photo = (Bitmap) extras.get("data");
+            //img.setImageBitmap(photo);
+
+            // CALL THIS METHOD TO GET THE URI FROM THE BITMAP
+            Uri tempUri = getImageUri(getApplicationContext(), photo);
+
+            // CALL THIS METHOD TO GET THE ACTUAL PATH
+            File finalFile = new File(getRealPathFromURI(tempUri));
+
+            System.out.println(mImageCaptureUri);
+        }
+    }
+
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        File photoFile = null;
+        Uri tempUri = null;
+
+        if (requestCode==CAM_REQUEST && resultCode==RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap photo = (Bitmap) extras.get("data");
+            //img.setImageBitmap(photo);
+
+            // CALL THIS METHOD TO GET THE URI FROM THE BITMAP
+            tempUri = getImageUri(getApplicationContext(), photo);
+
+            // CALL THIS METHOD TO GET THE ACTUAL PATH
+            //File finalFile = new File(getRealPathFromURI(tempUri));
+
+        }
+
                 Intent emailIntent = new Intent(Intent.ACTION_SEND);
                 emailIntent.setType("application/image");
                 emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"usdadiyajay123@gmail.com"});
@@ -258,69 +313,27 @@ public class ReportActivity extends AppCompatActivity {
                         "Position: "+strPosition+""+"\n"+
                         "Incident Type: "+ strIncidentType +""+"\n"+
                         "Injured Body Part: "+ strInjuryPart+"" );
-               // emailIntent.putExtra(Intent.EXTRA_STREAM,);
-                startActivity(Intent.createChooser(emailIntent, "Send mail."));*/
-            }
-        });
+                //photoUri = FileProvider.getUriForFile(ReportActivity.this, "com.appsforyou", photoFile);
+                emailIntent.putExtra(Intent.EXTRA_STREAM, tempUri);
+                startActivity(Intent.createChooser(emailIntent, "Send mail."));
     }
 
-    public void pictureTaken(){
-        Intent i=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (i.resolveActivity(getPackageManager()) != null){
-            File photoFile = null;
-            photoFile = createPhotoFile();
-            if(photoFile != null){
-                String pathToFile = photoFile.getAbsolutePath();
-                Uri photoUri = FileProvider.getUriForFile(ReportActivity.this, "com.appsforyou", photoFile);
-                i.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                startActivityForResult(i, 1);
-            }
-
-
-        }
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = "";
+        path = MediaStore.Images.Media.insertImage(getContentResolver(), inImage, "Title", "");
+        return Uri.parse(path);
     }
 
-
-    public void onActivity(int requestCode,int resultCode, Intent data){
-        super.onActivityResult(requestCode,resultCode,data);
-        Bitmap tempImage;
-        ImageView img=(ImageView) findViewById(R.id.image);
-        //captures photo using the camera
-        if (requestCode==CAM_REQUEST && resultCode==RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap photo = (Bitmap) extras.get("data");
-            img.setImageBitmap(photo);
-        }
+    public String getRealPathFromURI(Uri uri) {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+        return cursor.getString(idx);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        Bitmap tempImage;
-        ImageView img=(ImageView) findViewById(R.id.image);
-        if (requestCode==CAM_REQUEST && resultCode==RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap photo = (Bitmap) extras.get("data");
-            img.setImageBitmap(photo);
-
-            Intent emailIntent = new Intent(Intent.ACTION_SEND);
-            emailIntent.setType("application/image");
-            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"willy162@gmail.com"});
-            emailIntent.putExtra(Intent.EXTRA_SUBJECT,"HR incident reporting");
-            emailIntent.putExtra(Intent.EXTRA_TEXT,"Incident Date: "+date.getText().toString()+""+"\n"+
-                    "Employee Number: "+empId.getText().toString()+"" +"\n"+
-                    "Employee Name: "+empName.getText().toString()+"" +"\n"+
-                    //"Gender: "+ gender +""+"\n"+
-                    "Shift: "+shift.getSelectedItem().toString()+""+"\n"+
-                    "Department: "+dept.getText().toString()+""+"\n"+
-                    "Position: "+position.getText().toString()+""+"\n"+
-                    "Incident Type: "+injurytype.getSelectedItem().toString()+""+"\n"+
-                    "Injured Body Part: "+injury.getSelectedItem().toString()+"" );
-            emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(newFile));
-            startActivity(Intent.createChooser(emailIntent, "Choose an email client"));
-        }
-    }
-
+    /*
     private String getPictureName(){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
         String timestamp = sdf.format(new Date());
@@ -333,16 +346,16 @@ public class ReportActivity extends AppCompatActivity {
         File image = null;
         try {
             image = File.createTempFile(
-                    "HRphoto",  /* prefix */
-                    ".jpg",         /* suffix */
-                    pictureDirectory      /* directory */
+                    "HRphoto",
+                    ".jpg",
+                    pictureDirectory
             );
         } catch (IOException e) {
             e.printStackTrace();
         }
         return image;
     }
-
+*/
     //use this method to create db and store data in it
     public void createDb() {
         /*creating the database HRIncident */
@@ -353,7 +366,7 @@ public class ReportActivity extends AppCompatActivity {
     public void getCurrentDate() {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat mdformat = new SimpleDateFormat("MM / dd / yyyy ");
-        String strDate = mdformat.format(calendar.getTime());
+        strDate = mdformat.format(calendar.getTime());
         display(strDate);
     }
 
