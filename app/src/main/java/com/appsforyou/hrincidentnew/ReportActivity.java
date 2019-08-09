@@ -1,23 +1,10 @@
 package com.appsforyou.hrincidentnew;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
@@ -34,10 +21,15 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import static java.lang.System.out;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 public class ReportActivity extends AppCompatActivity {
     Intent reportintent, viewintent;
@@ -177,8 +169,8 @@ public class ReportActivity extends AppCompatActivity {
             String part = c.getString(0);
             categories.add(part);
         }
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
-        injury.setAdapter(dataAdapter);
+        ArrayAdapter<String> bodyPartAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
+        injury.setAdapter(bodyPartAdapter);
 
         report.setOnClickListener(new View.OnClickListener() {
             @Override
