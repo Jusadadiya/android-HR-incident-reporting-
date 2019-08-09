@@ -17,56 +17,62 @@
         android:textSize="25dp"
         android:layout_gravity="center"/>
 
-    <TableLayout
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TableLayout
             android:id="@+id/table1"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <TableRow
+            <TableRow
                 android:id="@+id/row1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Incident ID"/>
+                    android:text="     Incident ID     "/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Incident Date" />
+                    android:text="     Incident Date     "/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Employee number" />
+                    android:text="     Employee number     "/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Employee name" />
+                    android:text="     Employee name     "/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Gender" />
+                    android:text="     Gender     "/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Shift" />
+                    android:text="     Shift     "/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Department" />
+                    android:text="     Department     "/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Position" />
+                    android:text="     Position     "/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Incident Type" />
+                    android:text="     Incident Type     "/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Injured body part" />
-        </TableRow>
+                    android:text="     Injured body part     "/>
+            </TableRow>
 
-    </TableLayout>
+        </TableLayout>
+
+    </HorizontalScrollView>
 
 </LinearLayout>
