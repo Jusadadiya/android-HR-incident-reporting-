@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class ViewActivity extends AppCompatActivity {
     Intent reportintent, viewintent;
     SQLiteDatabase db;
+    private TableLayout tableLayout;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -52,10 +55,20 @@ public class ViewActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Incident History Is Empty", Toast.LENGTH_LONG).show();
             return;
         }
-        StringBuffer bfr;
+
+        // Show all history data in the table
+        tableLayout = (TableLayout)findViewById(R.id.table1);
+        // clear content in the table
+        tableLayout.removeAllViews();
+
+        // create the first row of table
+        TableRow tableRow = new TableRow(ViewActivity.this);
+
+
+
 
         // Call the procedure to show all records
-        bfr = showRecords(csl);
+        showRecords(csl);
         csl.close();
     }
 
