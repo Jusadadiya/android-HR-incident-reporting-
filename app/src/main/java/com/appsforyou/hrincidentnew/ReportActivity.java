@@ -193,18 +193,35 @@ public class ReportActivity extends AppCompatActivity {
         report.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent camera_intent =new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(camera_intent,CAM_REQUEST);
-                db.close();
-                String gender="male";
+                // get all input values
+                String strDate = date.getText().toString();
+                String strEmpNum = empId.getText().toString();
+                String strEmpName = empName.getText().toString();
+                String strGender = "";
                 if(rbmale.isChecked()){
 
-                    gender=rbmale.getText().toString();
+                    strGender=rbmale.getText().toString();
+                }
+                else if(rbfemale.isChecked()){
+                    strGender=rbfemale.getText().toString();
+                }
+                String strShift = shift.getSelectedItem().toString();
+                String strDepartment = dept.getText().toString();
+                String strPosition = dept.getText().toString();
+                String strIncidentType = injurytype.getSelectedItem().toString();
+                String strInjuryPart = injury.getSelectedItem().toString();
+
+                // Validation
+                if(strEmpNum.length()==0 || strGender.length()==0 || strShift.length()==0 || strIncidentType.length()==0 || strInjuryPart.length()==0){
+                    Toast.makeText(getApplicationContext(), "Please Input All Information", Toast.LENGTH_LONG).show();
+                    return;
                 }
 
-                else if(rbfemale.isChecked()){
-                    gender=rbfemale.getText().toString();
-                }
+                // start camera
+                Intent camera_intent =new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(camera_intent,CAM_REQUEST);
+
+                // send email
                 Intent emailIntent = new Intent(Intent.ACTION_SEND);
                 emailIntent.setType("application/image");
                 emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"usdadiyajay123@gmail.com"});
@@ -212,7 +229,7 @@ public class ReportActivity extends AppCompatActivity {
                 emailIntent.putExtra(Intent.EXTRA_TEXT,"Incident Date: "+date.getText().toString()+""+"\n"+
                         "Employee Number: "+empId.getText().toString()+"" +"\n"+
                         "Employee Name: "+empName.getText().toString()+"" +"\n"+
-                        "Gender: "+ gender +""+"\n"+
+                        "Gender: "+ strGender +""+"\n"+
                         "Shift: "+shift.getSelectedItem().toString()+""+"\n"+
                         "Department: "+dept.getText().toString()+""+"\n"+
                         "Position: "+position.getText().toString()+""+"\n"+
@@ -235,7 +252,6 @@ public class ReportActivity extends AppCompatActivity {
             Bitmap photo = (Bitmap) extras.get("data");
             img.setImageBitmap(photo);
         }
-
     }
     //use this method to create db and store data in it
     public void createDb() {
