@@ -26,14 +26,19 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+
+import static android.os.Environment.getExternalStoragePublicDirectory;
 
 public class ReportActivity extends AppCompatActivity {
     Intent reportintent, viewintent;
@@ -49,6 +54,7 @@ public class ReportActivity extends AppCompatActivity {
     EditText date, empId, empName, dept, position;
     Spinner shift, injurytype, injury;
     File newFile;
+    Uri pictureUri;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -233,8 +239,9 @@ public class ReportActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Record Successfully Stored", Toast.LENGTH_LONG).show();
 
                 // start camera
-                Intent camera_intent =new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(camera_intent,CAM_REQUEST);
+                pictureTaken();
+                //Intent camera_intent =new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                //startActivityForResult(camera_intent,CAM_REQUEST);
 
                 // send email
                 /*
@@ -257,7 +264,22 @@ public class ReportActivity extends AppCompatActivity {
         });
     }
 
-    Intent i=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    public void pictureTaken(){
+        Intent i=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (i.resolveActivity(getPackageManager()) != null){
+            File photoFile = null;
+            photoFile = createPhotoFile();
+            if(photoFile != null){
+                String pathToFile = photoFile.getAbsolutePath();
+                Uri photoUri = FileProvider.getUriForFile(ReportActivity.this, "com.appsforyou", photoFile);
+                i.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                startActivityForResult(i, 1);
+            }
+
+
+        }
+    }
+
 
     public void onActivity(int requestCode,int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
@@ -281,35 +303,6 @@ public class ReportActivity extends AppCompatActivity {
             Bitmap photo = (Bitmap) extras.get("data");
             img.setImageBitmap(photo);
 
-            try {
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                photo.compress(Bitmap.CompressFormat.PNG, 40,
-                        bytes);
-                // creating a ".jpg" in sdcard folder.
-                String pngUri = Environment
-                        .getExternalStorageDirectory()
-                        + File.separator
-                        + "ReportPhoto"
-                        + "_View.jpg";
-                newFile = new File(pngUri);
-                newFile.createNewFile();
-                // write the bytes in file
-                FileOutputStream fo = new FileOutputStream(newFile);
-                fo.write(bytes.toByteArray());
-                fo.close();
-            } catch (Exception e) {
-                Log.d("error in save image", "-->"
-                        + e.getMessage().toString());
-            }
-
-            String gender="male";
-            if(rbmale.isChecked()){
-
-                gender=rbmale.getText().toString();
-            }
-            else if(rbfemale.isChecked()){
-                gender=rbfemale.getText().toString();
-            }
             Intent emailIntent = new Intent(Intent.ACTION_SEND);
             emailIntent.setType("application/image");
             emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"willy162@gmail.com"});
@@ -317,7 +310,7 @@ public class ReportActivity extends AppCompatActivity {
             emailIntent.putExtra(Intent.EXTRA_TEXT,"Incident Date: "+date.getText().toString()+""+"\n"+
                     "Employee Number: "+empId.getText().toString()+"" +"\n"+
                     "Employee Name: "+empName.getText().toString()+"" +"\n"+
-                    "Gender: "+ gender +""+"\n"+
+                    //"Gender: "+ gender +""+"\n"+
                     "Shift: "+shift.getSelectedItem().toString()+""+"\n"+
                     "Department: "+dept.getText().toString()+""+"\n"+
                     "Position: "+position.getText().toString()+""+"\n"+
@@ -326,6 +319,28 @@ public class ReportActivity extends AppCompatActivity {
             emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(newFile));
             startActivity(Intent.createChooser(emailIntent, "Choose an email client"));
         }
+    }
+
+    private String getPictureName(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        String timestamp = sdf.format(new Date());
+        return "ReportImg"+timestamp;
+    }
+
+    public File createPhotoFile(){
+        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        String pictureName = getPictureName();
+        File image = null;
+        try {
+            image = File.createTempFile(
+                    "HRphoto",  /* prefix */
+                    ".jpg",         /* suffix */
+                    pictureDirectory      /* directory */
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return image;
     }
 
     //use this method to create db and store data in it
