@@ -232,6 +232,7 @@ public class ReportActivity extends AppCompatActivity {
                 startActivityForResult(camera_intent,CAM_REQUEST);
 
                 // send email
+                /*
                 Intent emailIntent = new Intent(Intent.ACTION_SEND);
                 emailIntent.setType("application/image");
                 emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"usdadiyajay123@gmail.com"});
@@ -246,7 +247,7 @@ public class ReportActivity extends AppCompatActivity {
                         "Incident Type: "+ strIncidentType +""+"\n"+
                         "Injured Body Part: "+ strInjuryPart+"" );
                // emailIntent.putExtra(Intent.EXTRA_STREAM,);
-                startActivity(Intent.createChooser(emailIntent, "Send mail."));
+                startActivity(Intent.createChooser(emailIntent, "Send mail."));*/
             }
         });
     }
