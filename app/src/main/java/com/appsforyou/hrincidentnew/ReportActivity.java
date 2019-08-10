@@ -41,14 +41,18 @@ import java.util.Date;
 import java.util.List;
 
 public class ReportActivity extends AppCompatActivity {
+    //Declaring instance of intent
     Intent reportintent, viewintent;
     Button report;
-    /*Declaring the instance of SQLite database */
+    //declaring cam request id to open camera
     static final int CAM_REQUEST=1;
+    /*Declaring the instance of SQLite database */
     SQLiteDatabase db;
     Intent intent1;
+    //declaring file outputstream instance to store image to disk
     FileOutputStream fstream;
 
+    // objects to link with front end
     RadioButton rbmale;
     RadioButton rbfemale;
     EditText date, empId, empName, dept, position;
@@ -60,12 +64,16 @@ public class ReportActivity extends AppCompatActivity {
     String strEmpNum, strDate, strEmpName, strGender, strShift, strDepartment, strPosition, strIncidentType, strInjuryPart;
     String lastIdInt;
 
+
+    // Create a menuInflater to inflate the options
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         getMenuInflater().inflate(R.menu.options, menu);
         return true;
     }
+
+    // define two options in the menu
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         int id = menuItem.getItemId();
@@ -81,10 +89,14 @@ public class ReportActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(menuItem);
     }
+    /*oncreate method that will load when the reportactivity page opens and will load fill all the data into spinner
+      and will populate using adapter the data from the database to the gui elements*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
+
+        //binding gui instances with a variable
         date=(EditText) findViewById(R.id.editText2);
         final RadioGroup rb=(RadioGroup) findViewById(R.id.genderGroup);
         rbmale=(RadioButton) findViewById(R.id.maleradio);
@@ -97,7 +109,9 @@ public class ReportActivity extends AppCompatActivity {
         shift=(Spinner) findViewById(R.id.shiftSpinner);
         injurytype=(Spinner) findViewById(R.id.injuryType);
         injury=(Spinner) findViewById(R.id.injuryPart);
+        //setting male as the default gender
         rbmale.setChecked(true);
+        //this code sets GUI options uneditable so that user does not edit information that is not required to be entered
         empName.setEnabled(false);
         dept.setEnabled(false);
         position.setEnabled(false);
@@ -106,9 +120,9 @@ public class ReportActivity extends AppCompatActivity {
         empId.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
-
+            /*this method will execute when a text input is changed in employee number field and will validate the user input and will
+             populate fields from tbl_employee*/
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 try {
@@ -136,8 +150,8 @@ public class ReportActivity extends AppCompatActivity {
                     Log.e("Memory exceptions","exceptions"+e1);
                 }
             }
-
-
+            /*this method will execute after a text input is changed in employee number field and will validate the user input and will
+            populate fields from tbl_employee*/
             @Override
             public void afterTextChanged(Editable editable) {
                 try {
@@ -146,7 +160,7 @@ public class ReportActivity extends AppCompatActivity {
 
                         if (c.moveToFirst()) {
                             do {
-                                // Passing values
+                                // Passing values from columns
                                 String name = c.getString(0);
                                 String empDep = c.getString(1);
                                 String empPosition = c.getString(2);
@@ -166,9 +180,11 @@ public class ReportActivity extends AppCompatActivity {
                 }
             }
         });
-
+        //this will fetch the current date and set it to the date field by default on load of page
         getCurrentDate();
+        //this will create database
         createDb();
+        //initializing the button and binding it from its GUI element to its object
         report = (Button) findViewById(R.id.reportBtn);
 
         // Create tbl_Employee table and insert five records
@@ -208,10 +224,12 @@ public class ReportActivity extends AppCompatActivity {
         ArrayAdapter<String> bodyPartAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
         injury.setAdapter(bodyPartAdapter);
 
+        //this event will store data to a table and validate data as well as open camera
+        // to take picture as well as send email with all data entered by user
         report.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // get all input values
+                // get all input values from the gui element on click of button
                 String strDate = date.getText().toString();
                 strEmpNum = empId.getText().toString();
                 strEmpName = empName.getText().toString();
@@ -229,12 +247,12 @@ public class ReportActivity extends AppCompatActivity {
                 strIncidentType = injurytype.getSelectedItem().toString();
                 strInjuryPart = injury.getSelectedItem().toString();
 
-                // Validation
+                // Validation to check empty fields
                 if(strEmpNum.length()==0 || strGender.length()==0 || strShift.length()==0 || strIncidentType.length()==0 || strInjuryPart.length()==0){
                     Toast.makeText(getApplicationContext(), "Please Input All Information", Toast.LENGTH_LONG).show();
                     return;
                 }
-
+                //validation to check employee number greater than data in employee table
                 try {
                     if(Integer.parseInt(strEmpNum) < 0 || Integer.parseInt(strEmpNum) > 6){
                         Toast.makeText(getApplicationContext(), "The employee number is not correct!", Toast.LENGTH_LONG).show();
@@ -258,16 +276,13 @@ public class ReportActivity extends AppCompatActivity {
                     break;
                 }
 
-                // start camera
-                //pictureTaken();
+                /**
+                 *  creation of intent to call the camera app
+                 */
                 Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 File f = new File(android.os.Environment.getExternalStorageDirectory(), "HRphoto.jpg");
                 mImageCaptureUri = Uri.fromFile(f);
-                //camera_intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
                 startActivityForResult(camera_intent,CAM_REQUEST);
-
-                // send email
-
             }
         });
     }
@@ -283,7 +298,6 @@ public class ReportActivity extends AppCompatActivity {
         if (requestCode==CAM_REQUEST && resultCode==RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap photo = (Bitmap) extras.get("data");
-            //img.setImageBitmap(photo);
 
             // CALL THIS METHOD TO GET THE URI FROM THE BITMAP
             Uri tempUri = getImageUri(getApplicationContext(), photo);
@@ -294,7 +308,6 @@ public class ReportActivity extends AppCompatActivity {
             System.out.println(mImageCaptureUri);
         }
     }
-
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -314,9 +327,13 @@ public class ReportActivity extends AppCompatActivity {
 
         }
 
-                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        /**
+         *  creating the email body
+         */
+
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
                 emailIntent.setType("application/image");
-                emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"usdadiyajay123@gmail.com"});
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"tmathew@conestogac.on.ca"});
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT,"HR incident reporting");
                 emailIntent.putExtra(Intent.EXTRA_TEXT, "Incident Id: "+ lastIdInt +"" +"\n"+
                         "Incident Date: "+ strDate +""+"\n"+
@@ -333,6 +350,12 @@ public class ReportActivity extends AppCompatActivity {
                 startActivity(Intent.createChooser(emailIntent, "Send mail."));
     }
 
+    /**
+     * changing image format from Bitmap to JPEG and getting the path
+     * @param inContext
+     * @param inImage
+     * @return
+     */
     public Uri getImageUri(Context inContext, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
@@ -348,29 +371,6 @@ public class ReportActivity extends AppCompatActivity {
         return cursor.getString(idx);
     }
 
-    /*
-    private String getPictureName(){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        String timestamp = sdf.format(new Date());
-        return "ReportImg"+timestamp;
-    }
-
-    public File createPhotoFile(){
-        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        String pictureName = getPictureName();
-        File image = null;
-        try {
-            image = File.createTempFile(
-                    "HRphoto",
-                    ".jpg",
-                    pictureDirectory
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return image;
-    }
-*/
     //use this method to create db and store data in it
     public void createDb() {
         /*creating the database HRIncident */

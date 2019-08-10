@@ -22,14 +22,14 @@ public class ViewActivity extends AppCompatActivity {
     private TableLayout tableLayout;
     private TableRow row1;
 
-    // Create a menu
+    // Create a menuInflater to inflate the options
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         getMenuInflater().inflate(R.menu.options, menu);
         return true;
     }
-    // define two options in the menu
+    // define two options in the menu and code to navigate using that menu
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         int id = menuItem.getItemId();
