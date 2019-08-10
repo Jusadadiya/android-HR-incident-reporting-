@@ -235,6 +235,17 @@ public class ReportActivity extends AppCompatActivity {
                     return;
                 }
 
+                try {
+                    if(Integer.parseInt(strEmpNum) < 0 || Integer.parseInt(strEmpNum) > 6){
+                        Toast.makeText(getApplicationContext(), "The employee number is not correct!", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }
+                catch(Exception e1) {
+                    Toast.makeText(getApplicationContext(), "The employee number is not correct!", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 // Insert the record into the table
                 db.execSQL("INSERT INTO tbl_IncidentHistory(incidentDate, empNum, empName, gender, shift, department, position, incidentType, injuredPart) " +
                         "VALUES('" + strDate + "','" + strEmpNum + "','" + strEmpName + "','" + strGender + "','" + strShift + "','" + strDepartment + "','" + strPosition + "','" + strIncidentType + "', '" + strInjuryPart + "');");
