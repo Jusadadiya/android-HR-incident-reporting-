@@ -30,6 +30,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -57,7 +58,7 @@ public class ReportActivity extends AppCompatActivity {
     Uri photoUri;
     Uri mImageCaptureUri;
     String strEmpNum, strDate, strEmpName, strGender, strShift, strDepartment, strPosition, strIncidentType, strInjuryPart;
-
+    String lastIdInt;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -239,6 +240,13 @@ public class ReportActivity extends AppCompatActivity {
                         "VALUES('" + strDate + "','" + strEmpNum + "','" + strEmpName + "','" + strGender + "','" + strShift + "','" + strDepartment + "','" + strPosition + "','" + strIncidentType + "', '" + strInjuryPart + "');");
                 Toast.makeText(getApplicationContext(), "Record Successfully Stored", Toast.LENGTH_LONG).show();
 
+                Cursor lastId = db.rawQuery("SELECT incidentId FROM tbl_IncidentHistory", null);
+                while (lastId.moveToLast()){
+                    // Passing values
+                    lastIdInt = lastId.getString(0);
+                    break;
+                }
+
                 // start camera
                 //pictureTaken();
                 Intent camera_intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -299,7 +307,8 @@ public class ReportActivity extends AppCompatActivity {
                 emailIntent.setType("application/image");
                 emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"usdadiyajay123@gmail.com"});
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT,"HR incident reporting");
-                emailIntent.putExtra(Intent.EXTRA_TEXT,"Incident Date: "+ strDate +""+"\n"+
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "Incident Id: "+ lastIdInt +"" +"\n"+
+                        "Incident Date: "+ strDate +""+"\n"+
                         "Employee Number: "+ strEmpNum +"" +"\n"+
                         "Employee Name: "+strEmpName+"" +"\n"+
                         "Gender: "+ strGender +""+"\n"+
